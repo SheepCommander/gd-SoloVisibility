@@ -1,4 +1,4 @@
-# gd-SoloVisibility
+# Solo Visibility
 A godot 4.x plugin that implements https://github.com/godotengine/godot-proposals/issues/9782.
 
 Use Shift + H to hide all nodes in the current scene except the selected ones.
