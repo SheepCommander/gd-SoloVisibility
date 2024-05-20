@@ -5,20 +5,23 @@ extends EditorPlugin
 ## Shift + H to hide all nodes except selection & children
 ## Alt + H to show all nodes except selection & children
 
+var HideShortcut: InputEventKey = InputEventKey.new()
+var ShowShortcut: InputEventKey = InputEventKey.new()
+
 
 func _enter_tree() -> void:
-	pass
+	HideShortcut = preload("res://addons/solo_visibility/hide_nodes_shortcut.tres")
+	ShowShortcut = preload("res://addons/solo_visibility/show_nodes_shortcut.tres")
+	print("Solo Visibility - Loaded shortcuts")
 
 
 func _input(event: InputEvent) -> void:
-	if event is InputEventKey:
-		if event.pressed and not event.echo:
-			match event.keycode:
-				KEY_H:
-					if event.alt_pressed:
-						commit_show_nodes()
-					if event.shift_pressed:
-						commit_hide_nodes()
+	if (HideShortcut.is_match(event) and event.is_pressed() and !event.is_echo()):
+			commit_hide_nodes()
+	if (ShowShortcut.is_match(event) and event.is_pressed() and !event.is_echo()):
+			commit_show_nodes()
+
+
 
 
 func commit_hide_nodes():

@@ -1,0 +1,70 @@
+[gd_scene load_steps=6 format=3 uid="uid://be4u5uyfv4rq1"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_phtmp"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_dju2f"]
+sky_material = SubResource("ProceduralSkyMaterial_phtmp")
+
+[sub_resource type="Environment" id="Environment_v0c8c"]
+background_mode = 2
+sky = SubResource("Sky_dju2f")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wi6ib"]
+albedo_color = Color(0.53505, 0.808603, 0.907862, 1)
+
+[sub_resource type="RibbonTrailMesh" id="RibbonTrailMesh_103s7"]
+size = 2.0
+
+[node name="Main" type="Node"]
+
+[node name="World1" type="Node3D" parent="."]
+
+[node name="Env" type="Node" parent="World1"]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="World1/Env"]
+transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="World1/Env"]
+environment = SubResource("Environment_v0c8c")
+
+[node name="Map" type="Node" parent="World1"]
+
+[node name="CSGBox3D" type="CSGBox3D" parent="World1/Map"]
+size = Vector3(20, 1, 20)
+material = SubResource("StandardMaterial3D_wi6ib")
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="World1/Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28, 4, 0)
+size = Vector3(20, 1, 20)
+material = SubResource("StandardMaterial3D_wi6ib")
+
+[node name="CSGBox3D3" type="CSGBox3D" parent="World1/Map"]
+transform = Transform3D(0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0, 1, 27, 0, 1)
+size = Vector3(20, 1, 20)
+material = SubResource("StandardMaterial3D_wi6ib")
+
+[node name="Decor" type="Node" parent="World1"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="World1/Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1, 0)
+mesh = SubResource("RibbonTrailMesh_103s7")
+
+[node name="Characters" type="Node" parent="World1"]
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Control" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Button" type="Button" parent="UI/Control"]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 8.0
