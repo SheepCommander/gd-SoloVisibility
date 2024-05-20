@@ -8,7 +8,7 @@ Use Ctrl + Z to undo. This operation is non-destructive!
 Addon is currently [pending on the Godot Asset Library.](https://godotengine.org/asset-library/asset/edit/12163)
 
 ## Known issues
-Disabling the plugin causes `Undo Hide Non-selected Nodes` to not work, even if you re-enable it before attempting it.
+Disabling the plugin causes `Undo Hide Non-selected Nodes` to break, even if you re-enable before attempting. I suspect this is Godot-level and cannot be fixed on the plugin's end.
 
 ## Change log
 ### Version 0.2
