@@ -1,4 +1,14 @@
 # gd-SoloVisibility
-A godot 4.x plugin that implements https://github.com/godotengine/godot-proposals/issues/9782 using Shift + H to hide all nodes except the selection, and Alt + H to do the inverse.
+A godot 4.x plugin that implements https://github.com/godotengine/godot-proposals/issues/9782.
 
-"Selection" includes all of the selected nodes children. As of version 0.1 this is currently a destructive operation.
+Use Shift + H to hide all nodes in the current scene except the selected ones.
+
+Use Ctrl + Z to undo. This operation is non-destructive!
+
+### Known issues
+Disabling the plugin causes `Undo Hide Non-selected Nodes` to not work, even if you re-enable it before attempting it.
+
+### Change log
+#### Version 0.2
+- Shift + H is no longer a destructive operation! Previous states of nodes are restored.
+- Alt + H is removed

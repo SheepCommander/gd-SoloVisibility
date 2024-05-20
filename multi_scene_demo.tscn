@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://c3ljhha2vt0ww"]
+[gd_scene load_steps=6 format=3 uid="uid://dig6x1vk7a2pk"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_phtmp"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -28,6 +28,7 @@ visible = false
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="World1/Env"]
 transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
+visible = false
 shadow_enabled = true
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="World1/Env"]
@@ -53,19 +54,23 @@ material = SubResource("StandardMaterial3D_wi6ib")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="World1/Decor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1, 0)
+visible = false
 mesh = SubResource("RibbonTrailMesh_103s7")
 
 [node name="Characters" type="Node" parent="World1"]
 
 [node name="UI" type="CanvasLayer" parent="."]
+visible = false
 
 [node name="Control" type="Control" parent="UI"]
+visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
 [node name="Button" type="Button" parent="UI/Control"]
+visible = false
 layout_mode = 0
 offset_right = 8.0
 offset_bottom = 8.0
