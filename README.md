@@ -10,12 +10,12 @@ Once installed Hotkey can be customized via the Godot inspector tab in `res://ad
 ## Download options
 (Get the Godot Game Engine here: https://godotengine.org/download/)
 
-1) **From the Asset Library:**
+**From the Asset Library:**
 - Look up "Solo Visbility" or click [here](https://godotengine.org/asset-library/asset/3000)
 
-2) Manually:
-i. Download the `addons` folder and drag it into your godot project
-ii. Enable the plugin in the `Project Settings / Plugin` tab
+Manually:
+1. Download the `addons` folder and drag it into your godot project
+2. Enable the plugin in the `Project Settings / Plugin` tab
 
 ## Known issues
 Disabling the plugin causes `Undo Hide Non-selected Nodes` to break, even if the plugin is re-enabled before attempting to undo. I suspect this is Godot-level and cannot be fixed on the plugin's end.
