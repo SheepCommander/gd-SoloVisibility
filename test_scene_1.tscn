@@ -1,4 +1,6 @@
-[gd_scene load_steps=6 format=3 uid="uid://c3ljhha2vt0ww"]
+[gd_scene load_steps=7 format=3 uid="uid://c3ljhha2vt0ww"]
+
+[ext_resource type="Texture2D" uid="uid://dmo1tj8utkqe5" path="res://icon.png" id="1_70my7"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_phtmp"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -61,11 +63,34 @@ mesh = SubResource("RibbonTrailMesh_103s7")
 
 [node name="Control" type="Control" parent="UI"]
 layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="Button" type="Button" parent="UI/Control"]
-layout_mode = 0
-offset_right = 8.0
-offset_bottom = 8.0
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/Control"]
+layout_mode = 2
+offset_left = -74.0
+offset_right = 1226.0
+offset_bottom = 648.0
+
+[node name="TextureRect" type="TextureRect" parent="UI/Control/HBoxContainer"]
+layout_mode = 2
+texture = ExtResource("1_70my7")
+expand_mode = 2
+stretch_mode = 3
+
+[node name="TextureRect2" type="TextureRect" parent="UI/Control/HBoxContainer"]
+layout_mode = 2
+texture = ExtResource("1_70my7")
+expand_mode = 2
+stretch_mode = 3
+
+[node name="PanelContainer" type="PanelContainer" parent="UI/Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

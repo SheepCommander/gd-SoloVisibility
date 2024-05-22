@@ -1,4 +1,6 @@
-[gd_scene load_steps=6 format=3 uid="uid://dig6x1vk7a2pk"]
+[gd_scene load_steps=7 format=3 uid="uid://07esld74uhuh"]
+
+[ext_resource type="Texture2D" uid="uid://dmo1tj8utkqe5" path="res://icon.png" id="1_xclgu"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_phtmp"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -28,7 +30,6 @@ visible = false
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="World1/Env"]
 transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
-visible = false
 shadow_enabled = true
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="World1/Env"]
@@ -54,23 +55,42 @@ material = SubResource("StandardMaterial3D_wi6ib")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="World1/Decor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1, 0)
-visible = false
 mesh = SubResource("RibbonTrailMesh_103s7")
 
 [node name="Characters" type="Node" parent="World1"]
 
 [node name="UI" type="CanvasLayer" parent="."]
-visible = false
 
 [node name="Control" type="Control" parent="UI"]
-visible = false
 layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="Button" type="Button" parent="UI/Control"]
-visible = false
-layout_mode = 0
-offset_right = 8.0
-offset_bottom = 8.0
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/Control"]
+layout_mode = 2
+offset_left = -74.0
+offset_right = 1226.0
+offset_bottom = 648.0
+
+[node name="TextureRect" type="TextureRect" parent="UI/Control/HBoxContainer"]
+layout_mode = 2
+texture = ExtResource("1_xclgu")
+expand_mode = 2
+stretch_mode = 3
+
+[node name="TextureRect2" type="TextureRect" parent="UI/Control/HBoxContainer"]
+layout_mode = 2
+texture = ExtResource("1_xclgu")
+expand_mode = 2
+stretch_mode = 3
+
+[node name="PanelContainer" type="PanelContainer" parent="UI/Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
