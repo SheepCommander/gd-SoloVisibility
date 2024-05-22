@@ -11,7 +11,7 @@ Once installed Hotkey can be customized via the Godot inspector tab in `res://ad
 (Get the Godot Game Engine here: https://godotengine.org/download/)
 
 **From the Asset Library:**
-- Look up "Solo Visbility" or click [here](https://godotengine.org/asset-library/asset/3000)
+- Download "Solo Visbility" from the [Asset Store](https://godotengine.org/asset-library/asset/3000)
 
 Manually:
 1. Download the `addons` folder and drag it into your godot project
