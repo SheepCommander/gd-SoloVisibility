@@ -23,40 +23,40 @@ size = 2.0
 
 [node name="Main2" type="Node"]
 
-[node name="World1" type="Node3D" parent="."]
+[node name="World2" type="Node3D" parent="."]
 
-[node name="Env" type="Node" parent="World1"]
+[node name="Env" type="Node" parent="World2"]
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="World1/Env"]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="World2/Env"]
 transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
 shadow_enabled = true
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="World1/Env"]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="World2/Env"]
 environment = SubResource("Environment_v0c8c")
 
-[node name="Map" type="Node" parent="World1"]
+[node name="Map" type="Node" parent="World2"]
 
-[node name="CSGBox3D" type="CSGBox3D" parent="World1/Map"]
+[node name="CSGBox3D" type="CSGBox3D" parent="World2/Map"]
 size = Vector3(20, 1, 20)
 material = SubResource("StandardMaterial3D_wi6ib")
 
-[node name="CSGBox3D2" type="CSGBox3D" parent="World1/Map"]
+[node name="CSGBox3D2" type="CSGBox3D" parent="World2/Map"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28, 4, 0)
 size = Vector3(20, 1, 20)
 material = SubResource("StandardMaterial3D_wi6ib")
 
-[node name="CSGBox3D3" type="CSGBox3D" parent="World1/Map"]
+[node name="CSGBox3D3" type="CSGBox3D" parent="World2/Map"]
 transform = Transform3D(0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0, 1, 27, 0, 1)
 size = Vector3(20, 1, 20)
 material = SubResource("StandardMaterial3D_wi6ib")
 
-[node name="Decor" type="Node" parent="World1"]
+[node name="Decor" type="Node" parent="World2"]
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="World1/Decor"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="World2/Decor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1, 0)
 mesh = SubResource("RibbonTrailMesh_103s7")
 
-[node name="Characters" type="Node" parent="World1"]
+[node name="Characters" type="Node" parent="World2"]
 
 [node name="UI" type="CanvasLayer" parent="."]
 
