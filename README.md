@@ -11,7 +11,7 @@ Once installed Hotkey can be customized via the Godot inspector tab in `res://ad
 (Get the Godot Game Engine here: https://godotengine.org/download/)
 
 **From the Asset Library:**
-- Download "Solo Visbility" from the [Asset Store](https://godotengine.org/asset-library/asset/3000)
+1. Download "Solo Visbility" from the [Asset Store](https://godotengine.org/asset-library/asset/3000)
 
 Manually:
 1. Download the `addons` folder and drag it into your godot project
@@ -19,6 +19,6 @@ Manually:
 
 ## Known issues
 1. Inputs do not work when the Scene dock is selected.
-	- As Godot does not allow the Scene dock 
+	- This cannot be fixed on the plugin's end and would require dozens of new methods to be added to the Godot Engine (Ask me for details if curious!)
 2. Disabling the plugin causes `Undo Hide Non-selected Nodes` to break, even if the plugin is re-enabled before attempting to undo. I suspect this is Godot-level and cannot be fixed on the plugin's end.
 	- Please remember to `Undo Hide Non-Selected Nodes` before disabling the plugin.
