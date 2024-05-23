@@ -21,10 +21,9 @@ albedo_color = Color(0.53505, 0.808603, 0.907862, 1)
 [sub_resource type="RibbonTrailMesh" id="RibbonTrailMesh_103s7"]
 size = 2.0
 
-[node name="Main" type="Node"]
+[node name="Main2" type="Node"]
 
 [node name="World1" type="Node3D" parent="."]
-visible = false
 
 [node name="Env" type="Node" parent="World1"]
 

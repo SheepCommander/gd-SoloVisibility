@@ -24,7 +24,6 @@ size = 2.0
 [node name="Main" type="Node"]
 
 [node name="World1" type="Node3D" parent="."]
-visible = false
 
 [node name="Env" type="Node" parent="World1"]
 

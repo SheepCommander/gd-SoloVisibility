@@ -18,6 +18,7 @@ Manually:
 2. Enable the plugin in the `Project Settings / Plugin` tab
 
 ## Known issues
-Disabling the plugin causes `Undo Hide Non-selected Nodes` to break, even if the plugin is re-enabled before attempting to undo. I suspect this is Godot-level and cannot be fixed on the plugin's end.
-
-Please remember to `Undo Hide Non-Selected Nodes` before disabling the plugin.
+1. Inputs do not work when the Scene dock is selected.
+	- As Godot does not allow the Scene dock 
+2. Disabling the plugin causes `Undo Hide Non-selected Nodes` to break, even if the plugin is re-enabled before attempting to undo. I suspect this is Godot-level and cannot be fixed on the plugin's end.
+	- Please remember to `Undo Hide Non-Selected Nodes` before disabling the plugin.
