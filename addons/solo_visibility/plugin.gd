@@ -4,28 +4,69 @@ extends EditorPlugin
 ## 
 ## [kbd]Shift + H[/kbd] to hide all nodes except selection & children
 
+
+## Set to true if the hotkey is activating inside the FileSystem and other unwanted docks.
+## If true, the hotkey will stop activating in the Scene dock and will only activate when the 2D or 3D viewports are focused.
+@export
+var Hotkey_Activates_When_I_Dont_Want_It_To: bool = false
+## Screens that the hotkey can be activated in.
+@export
+var AllowedScreens : Array[String] = [
+	"3D",
+	"2D",
+]
+var CurrentMainScreen: String
 var HideShortcut: InputEventKey ## Configurable via [code]solo_visibility/hide_nodes_shortcut.tres[/code]
 var ShowShortcut: InputEventKey ## @experimental SHOW SHORTCUT IS NOT IMPLEMENTED YET
-
 
 # --- Virtual functions --- #
 func _enter_tree() -> void:
 	HideShortcut = preload("res://addons/solo_visibility/hide_nodes_shortcut.tres")
 	ShowShortcut = preload("res://addons/solo_visibility/show_nodes_shortcut.tres")
 	print("Solo Visibility - Loaded shortcuts")
+	
+	main_screen_changed.connect(_on_main_screen_changed)
+
+
+func _input(event: InputEvent) -> void:
+	if Hotkey_Activates_When_I_Dont_Want_It_To: # Fallback to _shortcut_input if _input isnt working
+		set_process_input(false)
+		return
+	_solo_visibility_input(event)
 
 
 func _shortcut_input(event: InputEvent) -> void:
-	if (HideShortcut.is_match(event) and event.is_pressed() and !event.is_echo()):
-		commit_hide_nodes()
+	if Hotkey_Activates_When_I_Dont_Want_It_To: # Fallback to _shortcut_input if _input isnt working
+		_solo_visibility_input(event)
 
-	if (ShowShortcut.is_match(event) and event.is_pressed() and !event.is_echo()):
-		pass
+
+func _solo_visibility_input(event: InputEvent):
+	if not event is InputEventKey:
+		return # Only proceed if the event is an InputEventKey (Does not proceed if InputEventMouseMotion, etc.)
+	
+	if not (event.is_pressed() and !event.is_echo()):
+		return # Only proceed if the event is_pressed() and not is_echo()	
+	
+	
+	if HideShortcut.is_match(event):
+		if CurrentMainScreen not in AllowedScreens:
+			print("Solo Visibility - Hotkey does not activate when %s screen is open" % CurrentMainScreen)
+			return
+		commit_hide_nodes()
+	
+	if ShowShortcut.is_match(event):
+		if CurrentMainScreen not in AllowedScreens:
+			print("Solo Visibility - Hotkey does not activate when %s screen is open" % CurrentMainScreen)
+			return
+		
 
 
 func _exit_tree() -> void:
-	
 	pass
+
+
+func _on_main_screen_changed(screen_name: String):
+	CurrentMainScreen = screen_name
 
 
 # --- Code that handles hiding --- #
@@ -35,8 +76,12 @@ var NextCacheID : int = 0
 var HiddenCache : Dictionary = {
 	#0: [Node, Node2] ## How the cache should look.
 }
+## Used by [method _] to get the [param dont_hide] used by the last [method commit_hide_nodes] call
+var DontHideCache : Dictionary = {
+	#0: [Node, Node2] ## How the cache should look.
+}
 ## Use method [EditorUndoRedoManager.get_object_history_id(root_node)] to find a scene's unique ID / key.
-## The value of that key is an [Array] which should be used as a Stack of what cacheID corresponds to the latest Hide action.
+## The value corresponding to a key is an [Array] of [int] cacheIDs
 ## 
 ## Use [method Array.pop_last()] to find the most recent cacheID of a given scene.
 var SceneCache : Dictionary = {
@@ -47,6 +92,7 @@ var SceneCache : Dictionary = {
 
 
 ## Handles the execution of the Hide action, as well as registering it in the Editor's UndoRedo system.
+## Does nothing if no node is selected.
 func commit_hide_nodes() -> void:
 	var undo_redo := get_undo_redo()
 	
@@ -56,6 +102,8 @@ func commit_hide_nodes() -> void:
 	NextCacheID += 1
 	
 	var selected = get_editor_interface().get_selection().get_transformable_selected_nodes()
+	if not selected:
+		return
 	
 	undo_redo.create_action("Hide Non-Selected Nodes", UndoRedo.MERGE_ENDS, root)
 	undo_redo.add_do_method(self, "_do_hide", root, selected, cacheID, sceneID)
@@ -69,7 +117,8 @@ func _do_hide(hide: Node, dont_hide: Array[Node], cacheID: int, sceneID: int) ->
 	var queue : Array[Node] = hide.get_children()
 
 	HiddenCache[cacheID] = [] # Create array in the cache for first itme
-	
+	DontHideCache[cacheID] = dont_hide.duplicate()
+
 	if SceneCache.has(sceneID): # If we already have a key-value pair for this SceneID, then append the new cacheID
 		SceneCache[sceneID].append(cacheID)
 	else: # Else, create array for first time
@@ -97,7 +146,7 @@ func _do_hide(hide: Node, dont_hide: Array[Node], cacheID: int, sceneID: int) ->
 
 
 # Private method. Called by [method commit_hide_nodes]
-#  
+# 
 func _undo_hide(hide: Node, dont_hide: Array, cacheID: int, sceneID: int):
 	var queue : Array[Node] = hide.get_children()
 
@@ -127,8 +176,9 @@ func _undo_hide(hide: Node, dont_hide: Array, cacheID: int, sceneID: int):
 
 # @experimental
 # Not implemented yet.
-func _intercept_undo_hide(root: Node, dont_hide: Array, cacheID: int, sceneID: int):
-	if SceneCache[sceneID].back() != cacheID:
-		print("Fail")
+func _do_undo_last_hide(root: Node):
+	var queue : Array[Node] = root.get_children()
 	
-	pass
+	
+	
+	var ignore = DontHideCache # simulates [param dont_hide]
