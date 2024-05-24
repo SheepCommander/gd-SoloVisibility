@@ -23,7 +23,7 @@ Customization:
 
 Where the hotkey can activate:
 - Only when the 2D or 3D 'main screens' (the tabs in the top middle) are open
-- Only when the 2D Viewport, 3D Viewport, or SceneTree are focused.
+- Only when the 2D Viewport, 3D Viewport, or Scene dock are focused.
 	- If you have any of those focused and the hotkey isn't working, please immediately open an Issue! 
 
 ## Known issues
