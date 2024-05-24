@@ -82,7 +82,7 @@ func _solo_visibility_input(event: InputEvent) -> void:
 # ==== Implementation Section ==== #
 const HIDE_ACTION_NAME = "Hide Non-Selected Nodes"
 
-## Handles the Hide Non-Selecteds Nodes action.
+## Handles the Hide Non-Selected Nodes action.
 ## Does nothing if no nodes are selected.
 func commit_hide_nodes() -> void:
 	var undo_redo := get_undo_redo()
