@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://07esld74uhuh"]
+[gd_scene load_steps=9 format=3 uid="uid://07esld74uhuh"]
 
 [ext_resource type="Texture2D" uid="uid://dmo1tj8utkqe5" path="res://icon.png" id="1_xclgu"]
 
@@ -21,6 +21,13 @@ albedo_color = Color(0.53505, 0.808603, 0.907862, 1)
 [sub_resource type="RibbonTrailMesh" id="RibbonTrailMesh_103s7"]
 size = 2.0
 
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_wngnc"]
+height = 1.5
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_ruitw"]
+radius = 0.4
+height = 1.6
+
 [node name="Main2" type="Node"]
 
 [node name="World2" type="Node3D" parent="."]
@@ -37,11 +44,13 @@ environment = SubResource("Environment_v0c8c")
 [node name="Map" type="Node" parent="World2"]
 
 [node name="CSGBox3D" type="CSGBox3D" parent="World2/Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 size = Vector3(20, 1, 20)
 material = SubResource("StandardMaterial3D_wi6ib")
 
 [node name="CSGBox3D2" type="CSGBox3D" parent="World2/Map"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28, 4, 0)
+visible = false
 size = Vector3(20, 1, 20)
 material = SubResource("StandardMaterial3D_wi6ib")
 
@@ -57,6 +66,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1, 0)
 mesh = SubResource("RibbonTrailMesh_103s7")
 
 [node name="Characters" type="Node" parent="World2"]
+
+[node name="CharacterBody3D" type="CharacterBody3D" parent="World2/Characters"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="World2/Characters/CharacterBody3D"]
+shape = SubResource("CapsuleShape3D_wngnc")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="World2/Characters/CharacterBody3D"]
+mesh = SubResource("CapsuleMesh_ruitw")
 
 [node name="UI" type="CanvasLayer" parent="."]
 

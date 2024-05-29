@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://c3ljhha2vt0ww"]
+[gd_scene load_steps=9 format=3 uid="uid://c3ljhha2vt0ww"]
 
 [ext_resource type="Texture2D" uid="uid://dmo1tj8utkqe5" path="res://icon.png" id="1_70my7"]
 
@@ -21,6 +21,13 @@ albedo_color = Color(0.53505, 0.808603, 0.907862, 1)
 [sub_resource type="RibbonTrailMesh" id="RibbonTrailMesh_103s7"]
 size = 2.0
 
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ewoj1"]
+height = 1.5
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_nyue4"]
+radius = 0.4
+height = 1.6
+
 [node name="Main" type="Node"]
 
 [node name="World1" type="Node3D" parent="."]
@@ -29,6 +36,7 @@ size = 2.0
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="World1/Env"]
 transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
+visible = false
 shadow_enabled = true
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="World1/Env"]
@@ -57,6 +65,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1, 0)
 mesh = SubResource("RibbonTrailMesh_103s7")
 
 [node name="Characters" type="Node" parent="World1"]
+
+[node name="CharacterBody3D" type="CharacterBody3D" parent="World1/Characters"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="World1/Characters/CharacterBody3D"]
+shape = SubResource("CapsuleShape3D_ewoj1")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="World1/Characters/CharacterBody3D"]
+mesh = SubResource("CapsuleMesh_nyue4")
 
 [node name="UI" type="CanvasLayer" parent="."]
 

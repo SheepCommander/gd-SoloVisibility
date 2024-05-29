@@ -13,14 +13,16 @@ const PLUGIN_CONFIG_PATH = "res://addons/solo_visibility/plugin.cfg"
 const PLUGIN_NAME = "Solo Visibility"
 var PluginConfig := ConfigFile.new()
 
-var AllowedScreens: Array[String] = ["3D","2D"]
+var AllowedScreens : Array[String] = ["3D","2D"]
 var AllowedFocuses : Array[String] = ["SceneTreeEditor", "Node3DEditorViewport", "CanvasItemEditorViewport"]
+var remove_errors : bool = true
 var ConfigDictionary : Dictionary = {
 	"AllowedScreens": AllowedScreens,
 	"AllowedFocuses": AllowedFocuses,
+	"remove_errors": remove_errors,
 }
 
-var CurrentMainScreen: String
+var current_main_screen: String = "" # Default val prevents null errors
 
 
 func _enter_tree() -> void:
@@ -52,7 +54,7 @@ func _exit_tree() -> void:
 
 
 func _on_main_screen_changed(screen_name: String) -> void:
-	CurrentMainScreen = screen_name
+	current_main_screen = screen_name
 
 
 func _input(event: InputEvent) -> void:
@@ -65,15 +67,20 @@ func _solo_visibility_input(event: InputEvent) -> void:
 	if not (event.is_pressed() and !event.is_echo()):
 		return # Only proceed if the event is_pressed() and not is_echo()
 	
-	var focus = EditorInterface.get_base_control().get_window().gui_get_focus_owner()
-	if focus.get_class() not in AllowedFocuses and focus.get_parent().get_class() not in AllowedFocuses:
-		return # WARNING: Unstable if internal classes are renamed or focus is not (/a direct child of) the internal class
+	var focus := EditorInterface.get_base_control().get_window().gui_get_focus_owner()
+	if focus == null:
+		return # Editor isnt focused, do nothing
+	if focus.get_class() not in AllowedFocuses:
+		if focus.get_parent().get_class() not in AllowedFocuses:
+			return # UNSTABLE: If internal classes renamed or GUI hierarchy moves
 	
 	match event.keycode:
 		HideShortcut.keycode:
-			if CurrentMainScreen not in AllowedScreens:
-				print("%s - Hotkey does not activate when %s screen is open" % [PLUGIN_NAME, CurrentMainScreen])
+			if current_main_screen not in AllowedScreens:
+				if not remove_errors:
+					print("%s - Hotkey does not activate when %s screen is open" % [PLUGIN_NAME, current_main_screen])
 				return
+			get_viewport().set_input_as_handled()
 			commit_hide_nodes()
 		ShowShortcut.keycode:
 			pass
@@ -88,9 +95,9 @@ func commit_hide_nodes() -> void:
 	var undo_redo := get_undo_redo()
 	
 	var root : Node = get_editor_interface().get_edited_scene_root()
-	var sceneID : int = undo_redo.get_object_history_id(root)
-	var cacheID : int = NextCacheID
-	NextCacheID += 1
+	var sceneID : int = get_scene_id(root)
+	var cacheID : int = next_cacheID
+	next_cacheID += 1
 	
 	var selected : Array[Node] = get_editor_interface().get_selection().get_transformable_selected_nodes()
 	if selected.is_empty():
@@ -103,7 +110,7 @@ func commit_hide_nodes() -> void:
 
 
 ## Used as key for [member StayHiddenCache]
-var NextCacheID : int = 0
+var next_cacheID : int = 0
 ## Stack (LIFO) of last-used CacheID in a given Scene. Use [method Array.pop_last]
 var SceneCacheIDs : Dictionary = {
 	#SceneID-int: [CacheID-int, CacheID-int]
@@ -116,6 +123,9 @@ var StayHiddenCache : Dictionary = {
 var DontHideCache : Dictionary = {
 	#CacheID-int: [SelectedNode, SelectedNode2]
 }
+
+func get_scene_id(node: Node) -> int:
+	return get_undo_redo().get_object_history_id(node)
 
 # Private method. Called by [method commit_hide_nodes]
 func _do_hide(root: Node, dont_hide: Array[Node], cacheID: int, sceneID: int) -> void:
@@ -131,7 +141,7 @@ func _do_hide(root: Node, dont_hide: Array[Node], cacheID: int, sceneID: int) ->
 	var queue : Array[Node] = root.get_children()
 	
 	while queue.size() > 0:
-		var node : Node = queue.pop_front()
+		var node : Node = queue.pop_back()
 		
 		if node in dont_hide: # Node is an excluded node, no need to check children
 			continue
@@ -153,7 +163,7 @@ func _do_hide(root: Node, dont_hide: Array[Node], cacheID: int, sceneID: int) ->
 func _undo_hide(root: Node, dont_hide: Array[Node], cacheID: int, sceneID: int) -> void:
 	var queue : Array[Node] = root.get_children()
 	while queue.size() > 0:
-		var node : Node = queue.pop_front()
+		var node : Node = queue.pop_back()
 		
 		if node in dont_hide: # Node was an excluded node, no need to check children
 			continue
@@ -176,4 +186,41 @@ func _undo_hide(root: Node, dont_hide: Array[Node], cacheID: int, sceneID: int) 
 	StayHiddenCache[cacheID].clear()
 	# Remove this cacheID from the Scene's stack of cacheIDs.
 	var lastCacheID = SceneCacheIDs[sceneID].pop_back()
-	assert(cacheID == lastCacheID, "Somehow a previous '%s' was Undone instead of the most recent one!" % HIDE_ACTION_NAME)
+	if not remove_errors:
+		assert(cacheID == lastCacheID, "Somehow a previous '%s' was undone instead of the most recent one!" % HIDE_ACTION_NAME)
+
+
+# ==== Implementation Section ==== #
+const SHOW_ACTION_NAME = "Show Non-Selected Nodes"
+
+## Handles the Show Non-Selected Nodes action
+## Does nothing if no node is selected.
+func commit_show() -> void:
+	var undo_redo := get_undo_redo()
+	
+	var root : Node = get_editor_interface().get_edited_scene_root()
+	var sceneID : int = get_scene_id(root)
+	var cacheID : int = next_cacheID
+	next_cacheID += 1
+	
+	var selected : Array[Node] = get_editor_interface().get_selection().get_transformable_selected_nodes()
+	if selected.is_empty():
+		return # There are no nodes selected
+	
+	undo_redo.create_action(SHOW_ACTION_NAME, UndoRedo.MERGE_ENDS, root) # Pass root for local context
+	undo_redo.add_do_method(self, "_do_show", root, selected, cacheID, sceneID)
+	undo_redo.add_undo_method(self, "_undo_show", root, selected, cacheID, sceneID)
+	undo_redo.commit_action()
+
+# Private method. Called by [method commit_show]
+func _do_show(root: Node, selected: Array[Node], cacheID: int, sceneID: int) -> void:
+	# Think of this as Undo Last Hide
+	var lastCacheID = SceneCacheIDs[sceneID].pop_back()
+	
+	pass
+
+
+# Private method. Called by [method commit_show]
+func _undo_show(root: Node, selected: Array[Node], cacheID: int, sceneID: int) -> void:
+	
+	pass
