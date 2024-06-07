@@ -11,7 +11,7 @@ var ShowShortcut: InputEventKey
 
 const PLUGIN_CONFIG_PATH = "res://addons/solo_visibility/plugin.cfg"
 const PLUGIN_NAME = "Solo Visibility"
-var PluginConfig := ConfigFile.new()
+var Config := ConfigFile.new()
 
 var AllowedScreens : Array[String] = ["3D","2D"]
 var AllowedFocuses : Array[String] = ["SceneTreeEditor", "Node3DEditorViewport", "CanvasItemEditorViewport"]
@@ -19,7 +19,6 @@ var remove_errors : bool = true
 var ConfigDictionary : Dictionary = {
 	"AllowedScreens": AllowedScreens,
 	"AllowedFocuses": AllowedFocuses,
-	"remove_errors": remove_errors,
 }
 
 var current_main_screen: String = "" # Default val prevents null errors
@@ -31,16 +30,16 @@ func _enter_tree() -> void:
 	HideShortcut = preload(HIDE_SHORTCUT_PATH)
 	ShowShortcut = preload(SHOW_SHORTCUT_PATH)
 	
-	PluginConfig.load(PLUGIN_CONFIG_PATH)
+	Config.load(PLUGIN_CONFIG_PATH)
 	for key in ConfigDictionary:
-		if not PluginConfig.has_section_key(PLUGIN_NAME, key):
-			PluginConfig.set_value(PLUGIN_NAME, key, ConfigDictionary[key])
+		if not Config.has_section_key(PLUGIN_NAME, key):
+			Config.set_value(PLUGIN_NAME, key, ConfigDictionary[key])
 		else:
 			if ConfigDictionary[key] is Array:
-				ConfigDictionary[key].assign(PluginConfig.get_value(PLUGIN_NAME, key))
+				ConfigDictionary[key].assign(Config.get_value(PLUGIN_NAME, key))
 			else:
-				ConfigDictionary[key] = PluginConfig.get_value(PLUGIN_NAME, key)
-	PluginConfig.save(PLUGIN_CONFIG_PATH)
+				ConfigDictionary[key] = Config.get_value(PLUGIN_NAME, key)
+	Config.save(PLUGIN_CONFIG_PATH)
 	
 	main_screen_changed.connect(_on_main_screen_changed)
 
@@ -58,14 +57,13 @@ func _on_main_screen_changed(screen_name: String) -> void:
 
 
 func _input(event: InputEvent) -> void:
-	_solo_visibility_input(event)
-
-
-func _solo_visibility_input(event: InputEvent) -> void:
 	if not event is InputEventKey:
 		return
 	if not (event.is_pressed() and !event.is_echo()):
 		return # Only proceed if the event is_pressed() and not is_echo()
+	
+	if current_main_screen not in AllowedScreens:
+		return
 	
 	var focus := EditorInterface.get_base_control().get_window().gui_get_focus_owner()
 	if focus == null:
@@ -76,10 +74,6 @@ func _solo_visibility_input(event: InputEvent) -> void:
 	
 	match event.keycode:
 		HideShortcut.keycode:
-			if current_main_screen not in AllowedScreens:
-				if not remove_errors:
-					print("%s - Hotkey does not activate when %s screen is open" % [PLUGIN_NAME, current_main_screen])
-				return
 			get_viewport().set_input_as_handled()
 			commit_hide_nodes()
 		ShowShortcut.keycode:
@@ -186,8 +180,6 @@ func _undo_hide(root: Node, dont_hide: Array[Node], cacheID: int, sceneID: int) 
 	StayHiddenCache[cacheID].clear()
 	# Remove this cacheID from the Scene's stack of cacheIDs.
 	var lastCacheID = SceneCacheIDs[sceneID].pop_back()
-	if not remove_errors:
-		assert(cacheID == lastCacheID, "Somehow a previous '%s' was undone instead of the most recent one!" % HIDE_ACTION_NAME)
 
 
 # ==== Implementation Section ==== #
