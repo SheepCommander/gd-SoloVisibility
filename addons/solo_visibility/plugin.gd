@@ -4,6 +4,7 @@ extends EditorPlugin
 ## [kbd]Shift + H[/kbd] to hide all nodes except selection & children
 ## [kbd]Alt + H[/kbd] to reveal all nodes except selection & children
 
+@onready var undo_redo : EditorUndoRedoManager = get_undo_redo()
 @onready var HideShortcut: InputEventKey = load("res://addons/solo_visibility/hide_nodes_shortcut.tres")
 @onready var ShowShortcut: InputEventKey = load("res://addons/solo_visibility/show_nodes_shortcut.tres")
 
@@ -69,10 +70,14 @@ func _input(event: InputEvent) -> void:
 # ==== Implementation Section ==== #
 const HIDE_ACTION_NAME := "Hide Non-Selected Nodes"
 const SHOW_ACTION_NAME := "Show Non-Selected Nodes"
-const STAY_HIDDEN : StringName = "_SoloVis_Hide"
-const STAY_SHOWN : StringName = "_SoloVis_Show"
+const KEEP_HIDDEN : StringName = "SoloVis_Hide"
 var NextCacheID : int = 1
-
+var CacheScene : Dictionary = {
+	# sceneID = [cacheID, cacheID]
+}
+var CacheParams : Dictionary = {
+	# cacheID = [root, selection, cacheID]
+}
 
 ## Handles the Hide Non-Selected Nodes action. Returns if no nodes are selected.
 func commit_hide_nodes() -> void:
@@ -84,17 +89,22 @@ func commit_hide_nodes() -> void:
 	var cacheID := NextCacheID
 	NextCacheID += 1
 	
-	var undo_redo : EditorUndoRedoManager = get_undo_redo()
 	undo_redo.create_action(HIDE_ACTION_NAME, UndoRedo.MERGE_DISABLE, root) # root for local context
 	undo_redo.add_do_method(self, "_do_hide", root, selected, cacheID)
 	undo_redo.add_undo_method(self, "_undo_hide", root, selected, cacheID)
 	undo_redo.commit_action()
+	
+	var sceneID : int = undo_redo.get_object_history_id(root)
+	if CacheScene.has(sceneID):
+		CacheScene[sceneID].append(cacheID)
+	else:
+		CacheScene[sceneID] = [cacheID]
 
 
 func _do_hide(root: Node, selection: Array[Node], cacheID: int) -> void:
 	var hide := func(node: Node) -> void:
 			if node.visible == false:
-				node.set_meta(STAY_HIDDEN+str(cacheID), true)
+				node.set_meta(KEEP_HIDDEN+str(cacheID), false)
 			node.visible = false
 	
 	_to_nonselected(hide, root, selection)
@@ -102,9 +112,9 @@ func _do_hide(root: Node, selection: Array[Node], cacheID: int) -> void:
 
 func _undo_hide(root: Node, selection: Array[Node], cacheID: int) -> void:
 	var undo_hide := func(node: Node) -> void:
-			if not node.has_meta(STAY_HIDDEN+str(cacheID)):
+			if not node.has_meta(KEEP_HIDDEN+str(cacheID)):
 				node.visible = true
-			node.remove_meta(STAY_HIDDEN+str(cacheID))
+			node.remove_meta(KEEP_HIDDEN+str(cacheID))
 	
 	_to_nonselected(undo_hide, root, selection)
 
@@ -141,7 +151,6 @@ func commit_show_nodes() -> void:
 	var cacheID := NextCacheID
 	NextCacheID += 1
 	
-	var undo_redo : EditorUndoRedoManager = get_undo_redo()
 	undo_redo.create_action(SHOW_ACTION_NAME, UndoRedo.MERGE_DISABLE, root) # root for local context
 	undo_redo.add_do_method(self, "_do_show", root, selected, cacheID)
 	undo_redo.add_undo_method(self, "_undo_show", root, selected, cacheID)
@@ -149,18 +158,10 @@ func commit_show_nodes() -> void:
 
 
 func _do_show(root: Node, selection: Array[Node], cacheID: int) -> void:
-	var do_show := func(node: Node) -> void:
-			if node.visible == true:
-				node.set_meta(STAY_SHOWN+str(cacheID), true)
-			node.visible = true
 	
-	_to_nonselected(do_show, root, selection)
+	pass
 
 
 func _undo_show(root: Node, selection: Array[Node], cacheID: int) -> void:
-	var undo_show := func(node: Node) -> void:
-			if not node.has_meta(STAY_SHOWN+str(cacheID)):
-				node.visible = false
-			node.remove_meta(STAY_SHOWN+str(cacheID))
 	
-	_to_nonselected(undo_show, root, selection)
+	pass
